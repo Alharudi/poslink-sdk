@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>POS Link Bluetooth Test</title>
+<meta name="description" content="Checks that this computer's browser can reach a POS Link terminal over Bluetooth.">
+<style>
+  :root {
+    --bg: #ffffff; --ink: #1c2128; --muted: #5d6672; --line: #dde2e7; --soft: #f4f6f8;
+    --accent: #0f5f7a; --accent-ink: #ffffff;
+    --ok: #1a7f37; --ok-soft: #e7f5ea; --bad: #b42318; --bad-soft: #fdecea; --wait: #8a6100; --wait-soft: #fdf6e3;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111418; --ink: #e6e9ed; --muted: #9aa4af; --line: #2a3038; --soft: #1a1f25;
+      --accent: #5fb7d3; --accent-ink: #0b1a20;
+      --ok: #5cc777; --ok-soft: #13251a; --bad: #ff7b72; --bad-soft: #2a1514; --wait: #e3b341; --wait-soft: #2a2312;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 40px 16px 64px; }
+  .brand { font-size: 13px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+  h1 { font-size: 30px; line-height: 1.2; margin: 6px 0 8px; }
+  h2 { font-size: 17px; margin: 32px 0 10px; }
+  p { margin: 0 0 12px; color: var(--muted); }
+  ol { margin: 0 0 12px; padding-left: 22px; }
+  li { margin: 4px 0; }
+  code { font-family: var(--mono); font-size: .9em; }
+  .checks { list-style: none; padding: 0; margin: 0 0 8px; }
+  .checks li { display: flex; gap: 10px; align-items: baseline; }
+  .checks .mark { width: 18px; flex: none; font-weight: 700; }
+  .checks .yes .mark { color: var(--ok); }
+  .checks .no .mark { color: var(--bad); }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 8px 0 4px; }
+  button {
+    font: inherit; font-weight: 600; padding: 10px 18px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--soft); color: var(--ink);
+  }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  button:disabled { opacity: .45; cursor: default; }
+  label { color: var(--muted); font-size: 14px; display: flex; gap: 6px; align-items: center; }
+  .status {
+    margin: 20px 0 0; padding: 16px 18px; border-radius: 10px; border: 1px solid var(--line); background: var(--soft);
+  }
+  .status strong { display: block; font-size: 18px; margin-bottom: 4px; }
+  .status p { margin: 0; color: inherit; }
+  .status.ok { background: var(--ok-soft); border-color: var(--ok); }
+  .status.ok strong { color: var(--ok); }
+  .status.bad { background: var(--bad-soft); border-color: var(--bad); }
+  .status.bad strong { color: var(--bad); }
+  .status.wait { background: var(--wait-soft); border-color: var(--wait); }
+  .status.wait strong { color: var(--wait); }
+  dl.details { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 14px 0 0; font-size: 15px; }
+  dl.details dt { color: var(--muted); }
+  dl.details dd { margin: 0; overflow-wrap: anywhere; }
+  pre.log {
+    margin: 0; padding: 12px 14px; max-height: 300px; overflow: auto; background: var(--soft);
+    border: 1px solid var(--line); border-radius: 8px; font: 12.5px/1.5 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere;
+  }
+  .hidden { display: none; }
+  footer { margin-top: 40px; font-size: 13px; color: var(--muted); }
+  footer a { color: inherit; }
+</style>
+</head>
+<body>
+<main>
+  <div class="brand">POS Link · Test</div>
+  <h1>Bluetooth test</h1>
+  <p>Checks that this computer's browser can talk to the payment terminal over Bluetooth. Nothing
+  is paid and nothing is saved: the page only says hello to the terminal and waits for its answer.</p>
+
+  <h2>This browser</h2>
+  <ul class="checks" id="checks"></ul>
+
+  <h2>Before you start</h2>
+  <ol>
+    <li>On the P3, open the <strong>POS Link sample</strong> app. Tap <strong>Be the terminal</strong> if
+      it says "Cashier", then choose <strong>Bluetooth</strong>.</li>
+    <li>Pair the P3 with this computer once, in the computer's Bluetooth settings. On the P3, open
+      <strong>Settings → Bluetooth</strong> so it's visible while you pair.</li>
+    <li>Click <strong>Connect to the P3</strong> and pick the P3 in the list.</li>
+  </ol>
+
+  <div class="actions">
+    <button class="primary" id="connect">Connect to the P3</button>
+    <button id="disconnect" disabled>Disconnect</button>
+    <label><input type="checkbox" id="showAll"> Show every device in the list</label>
+  </div>
+
+  <div class="status" id="status"><strong>Not connected</strong><p>Follow the steps above.</p></div>
+  <dl class="details hidden" id="details"></dl>
+
+  <h2>Log</h2>
+  <pre class="log" id="log">Nothing yet.</pre>
+  <div class="actions">
+    <button id="copy">Copy report</button>
+    <span id="copied" class="hidden" style="color: var(--muted); font-size: 14px">Copied. Paste it in your message.</span>
+  </div>
+
+  <footer>
+    POS Link protocol v2 · Bluetooth service <code>ac0c0005-cf31-4ff0-828c-7470cd97fc7d</code> ·
+    <a href="https://github.com/Alharudi/poslink-sdk">Source</a>
+  </footer>
+</main>
+
+<script type="module">
+import { encodeJsonFrame, FrameDecoder, HELLO, payloadJson, typeName } from "./poslink-frames.js";
+
+const SERVICE = "ac0c0005-cf31-4ff0-828c-7470cd97fc7d";
+const ANSWER_TIMEOUT_MS = 12000;
+const HELLO_EVERY_MS = 3000;
+
+const $ = (id) => document.getElementById(id);
+const lines = [];
+let result = "Not run";
+let peerSummary = "";
+let session = null;
+
+// ---- Environment ----
+
+const env = { computer: "unknown", browser: navigator.userAgent };
+
+async function describeEnvironment() {
+  const ua = navigator.userAgentData;
+  if (ua?.getHighEntropyValues) {
+    try {
+      const v = await ua.getHighEntropyValues(["platform", "platformVersion", "fullVersionList"]);
+      let os = v.platform || "unknown";
+      if (os === "Windows" && v.platformVersion) os += parseInt(v.platformVersion, 10) >= 13 ? " 11" : " 10";
+      else if (v.platformVersion) os += ` ${v.platformVersion}`;
+      env.computer = os;
+      const brand = (v.fullVersionList || []).find((b) => /Chrome|Edge|Opera/.test(b.brand) && !/Not/.test(b.brand))
+        ?? (v.fullVersionList || []).find((b) => b.brand === "Chromium");
+      if (brand) env.browser = `${brand.brand} ${brand.version}`;
+    } catch { /* keep the user agent */ }
+  }
+  const checks = [
+    ["serial" in navigator, "Can use serial ports (Chrome or Edge 117+ on a computer)",
+      "Can't use serial ports. Open this page in Chrome or Edge, version 117 or newer, on a computer. Firefox and Safari can't do this."],
+    [window.isSecureContext, "Secure page (https)", "Not a secure page. Open it over https."],
+  ];
+  $("checks").innerHTML = "";
+  for (const [okay, yes, no] of checks) {
+    const li = document.createElement("li");
+    li.className = okay ? "yes" : "no";
+    li.innerHTML = `<span class="mark">${okay ? "✓" : "✗"}</span><span></span>`;
+    li.lastChild.textContent = okay ? yes : no;
+    $("checks").append(li);
+  }
+  const info = document.createElement("li");
+  info.innerHTML = `<span class="mark"></span><span></span>`;
+  info.lastChild.textContent = `${env.computer} · ${env.browser}`;
+  info.style.color = "var(--muted)";
+  $("checks").append(info);
+  $("connect").disabled = !("serial" in navigator && window.isSecureContext);
+}
+
+// ---- Output ----
+
+function log(text) {
+  const t = new Date().toISOString().slice(11, 23);
+  lines.push(`${t}  ${text}`);
+  $("log").textContent = lines.join("\n");
+  $("log").scrollTop = $("log").scrollHeight;
+}
+
+function setStatus(kind, title, text) {
+  $("status").className = `status ${kind}`;
+  $("status").innerHTML = "<strong></strong><p></p>";
+  $("status").firstChild.textContent = title;
+  $("status").lastChild.textContent = text;
+  if (kind === "ok" || kind === "bad") result = `${kind === "ok" ? "PASS" : "FAIL"}: ${title}. ${text}`;
+}
+
+function showDetails(rows) {
+  const dl = $("details");
+  dl.innerHTML = "";
+  for (const [k, v] of rows) {
+    if (v == null || v === "") continue;
+    const dt = document.createElement("dt");
+    const dd = document.createElement("dd");
+    dt.textContent = k;
+    dd.textContent = v;
+    dl.append(dt, dd);
+  }
+  dl.classList.toggle("hidden", !rows.length);
+}
+
+// ---- The test ----
+
+function randomBytes(n) {
+  return crypto.getRandomValues(new Uint8Array(n));
+}
+
+function hex(bytes) {
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function base64(bytes) {
+  return btoa(String.fromCharCode(...bytes));
+}
+
+async function connect() {
+  lines.length = 0;
+  showDetails([]);
+  result = "Not finished";
+  peerSummary = "";
+  $("copied").classList.add("hidden");
+
+  let port;
+  try {
+    const options = { allowedBluetoothServiceClassIds: [SERVICE] };
+    if (!$("showAll").checked) options.filters = [{ bluetoothServiceClassId: SERVICE }];
+    port = await navigator.serial.requestPort(options);
+  } catch (e) {
+    log(`requestPort: ${e.name}: ${e.message}`);
+    if (e.name === "NotFoundError") {
+      setStatus("bad", "No device chosen",
+        "If the P3 wasn't in the list: pair it in this computer's Bluetooth settings first, check that the sample app is open as terminal with Bluetooth, then try again. You can also tick \"Show every device in the list\".");
+    } else {
+      setStatus("bad", "The browser refused", `${e.name}: ${e.message}`);
+    }
+    return;
+  }
+
+  const info = port.getInfo();
+  log(`Chosen: ${JSON.stringify(info)}`);
+  if (info.bluetoothServiceClassId && info.bluetoothServiceClassId.toLowerCase() !== SERVICE) {
+    log(`Warning: this is Bluetooth service ${info.bluetoothServiceClassId}, not POS Link's.`);
+  }
+  if (!info.bluetoothServiceClassId) log("Warning: this port isn't a Bluetooth service (a USB or built-in serial port?).");
+
+  setStatus("wait", "Connecting…", "Opening the Bluetooth connection to the P3.");
+  const openedAt = performance.now();
+  try {
+    await port.open({ baudRate: 115200 }); // Bluetooth ignores the speed; the API requires one.
+  } catch (e) {
+    log(`open: ${e.name}: ${e.message}`);
+    setStatus("bad", "Couldn't connect to the P3",
+      "Is the P3 nearby with Bluetooth on, and is the sample app open as terminal with Bluetooth chosen? Another cashier connected to it can also block this. Details are in the log.");
+    return;
+  }
+  log(`Connected in ${Math.round(performance.now() - openedAt)} ms`);
+
+  const s = {
+    port,
+    writer: port.writable.getWriter(),
+    reader: port.readable.getReader(),
+    decoder: new FrameDecoder(),
+    deviceId: hex(randomBytes(16)),
+    sessionId: crypto.randomUUID(),
+    nonce: base64(randomBytes(16)),
+    bytesIn: 0,
+    bytesOut: 0,
+    lastHelloAt: 0,
+    done: false,
+    closing: false,
+    timers: [],
+  };
+  session = s;
+  $("connect").disabled = true;
+  $("disconnect").disabled = false;
+  setStatus("wait", "Connected. Waiting for the P3 to answer…", "This takes a second or two.");
+
+  readLoop(s);
+  await sendHello(s, true);
+  s.timers.push(setInterval(() => { if (!s.done) sendHello(s, true); }, HELLO_EVERY_MS));
+  s.timers.push(setTimeout(() => {
+    if (s.done) return;
+    if (s.bytesIn === 0) {
+      fail(s, "The P3 didn't answer",
+        "The Bluetooth connection opened, but nothing came back. Check that the sample app on the P3 is the terminal with Bluetooth chosen, and that this computer picked the right device.");
+    } else {
+      fail(s, "The P3 sent data, but not a POS Link answer",
+        `Received ${s.bytesIn} bytes (${s.decoder.crcErrors} damaged frames). Another app may be using this Bluetooth service.`);
+    }
+  }, ANSWER_TIMEOUT_MS));
+}
+
+async function sendHello(s, needReply, known) {
+  const payload = {
+    protocol: 2,
+    role: "cashier",
+    deviceId: s.deviceId,
+    name: "Bluetooth test page",
+    manufacturer: "Browser",
+    model: env.browser,
+    appVersion: "bluetooth-test 1",
+    sdkVersion: "web-test",
+    sessionId: s.sessionId,
+    nonce: s.nonce,
+    needReply,
+  };
+  if (known !== undefined) payload.known = known;
+  const bytes = encodeJsonFrame(HELLO, payload);
+  try {
+    await s.writer.write(bytes);
+    s.bytesOut += bytes.length;
+    if (needReply) s.lastHelloAt = performance.now();
+    log(`→ HELLO (${needReply ? "asking for an answer" : "answer"}), ${bytes.length} bytes`);
+  } catch (e) {
+    log(`write: ${e.name}: ${e.message}`);
+    if (!s.closing) fail(s, "Sending failed", "The connection dropped while sending. Details are in the log.");
+  }
+}
+
+async function readLoop(s) {
+  try {
+    for (;;) {
+      const { value, done } = await s.reader.read();
+      if (done) break;
+      s.bytesIn += value.length;
+      for (const frame of s.decoder.add(value)) onFrame(s, frame);
+    }
+  } catch (e) {
+    if (!s.closing) {
+      log(`read: ${e.name}: ${e.message}`);
+      if (!s.done) fail(s, "The connection dropped", "The P3 went away during the test. Details are in the log.");
+      else log("The connection closed.");
+    }
+  }
+}
+
+function onFrame(s, frame) {
+  if (frame.version === 1) {
+    log(`← a protocol v1 frame (type ${frame.type})`);
+    fail(s, "The P3 runs the old app",
+      "It answered with protocol v1, which is the sunmi_usb app. Open the POS Link sample on the P3 instead.");
+    return;
+  }
+  const name = typeName(frame.type);
+  if (frame.type !== HELLO) {
+    log(`← ${name} (counter ${frame.counter}, ${frame.payload.length} bytes)`);
+    return;
+  }
+  const hello = payloadJson(frame);
+  if (!hello) {
+    log("← HELLO with an unreadable payload");
+    return;
+  }
+  log(`← HELLO from "${hello.name}" (${hello.role}, protocol ${hello.protocol}, ${hello.needReply ? "asking for an answer" : "answer"})`);
+  if (hello.protocol !== 2) {
+    fail(s, "Different protocol version", `The P3 speaks protocol ${hello.protocol}; this page speaks 2.`);
+    return;
+  }
+  if (hello.role !== "terminal") {
+    fail(s, "The P3 is set as a cashier", "On the P3, tap \"Be the terminal\" in the sample app, then test again.");
+    return;
+  }
+  if (hello.needReply) sendHello(s, false, false);
+  if (!hello.needReply && "known" in hello && !s.done) {
+    pass(s, hello, Math.round(performance.now() - s.lastHelloAt));
+  }
+}
+
+function pass(s, hello, answerMs) {
+  s.done = true;
+  clearTimers(s);
+  setStatus("ok", "The link works in both directions",
+    "The P3 got this page's message and answered it. A browser on this computer can be a POS Link cashier over Bluetooth.");
+  const device = [hello.manufacturer, hello.model].filter(Boolean).join(" ");
+  peerSummary = `${hello.name} (${device}), app ${hello.appVersion ?? "?"}, SDK ${hello.sdkVersion ?? "?"}`;
+  showDetails([
+    ["Terminal", hello.name],
+    ["Device", device],
+    ["App version", hello.appVersion],
+    ["SDK version", hello.sdkVersion],
+    ["Answer time", `${answerMs} ms`],
+    ["Knows this page", hello.known ? "yes" : "no (expected: this test doesn't pair)"],
+  ]);
+  log(`PASS: answer in ${answerMs} ms`);
+}
+
+function fail(s, title, text) {
+  if (s.done) return;
+  s.done = true;
+  clearTimers(s);
+  setStatus("bad", title, text);
+  log(`FAIL: ${title}`);
+}
+
+function clearTimers(s) {
+  s.timers.forEach((t) => { clearInterval(t); clearTimeout(t); });
+  s.timers = [];
+}
+
+async function disconnect() {
+  const s = session;
+  if (!s) return;
+  session = null;
+  s.closing = true;
+  clearTimers(s);
+  try { await s.reader.cancel(); } catch {}
+  try { s.reader.releaseLock(); } catch {}
+  try { s.writer.releaseLock(); } catch {}
+  try { await s.port.close(); } catch (e) { log(`close: ${e.name}: ${e.message}`); }
+  log(`Disconnected. Sent ${s.bytesOut} bytes, received ${s.bytesIn}, damaged frames ${s.decoder.crcErrors}.`);
+  if (!s.done) setStatus("", "Disconnected", "The test was stopped before the P3 answered.");
+  $("connect").disabled = false;
+  $("disconnect").disabled = true;
+}
+
+async function copyReport() {
+  const text = [
+    "POS Link Bluetooth test",
+    `Result: ${result}`,
+    `Computer: ${env.computer}`,
+    `Browser: ${env.browser}`,
+    peerSummary && `Terminal: ${peerSummary}`,
+    `Page: ${location.href}`,
+    "",
+    ...lines,
+  ].filter((l) => l !== "").join("\n");
+  try {
+    await navigator.clipboard.writeText(text);
+    $("copied").classList.remove("hidden");
+  } catch {
+    $("log").textContent = text;
+    getSelection().selectAllChildren($("log"));
+  }
+}
+
+$("connect").addEventListener("click", connect);
+$("disconnect").addEventListener("click", disconnect);
+$("copy").addEventListener("click", copyReport);
+navigator.serial?.addEventListener("disconnect", () => { if (session) { log("The device disconnected."); disconnect(); } });
+describeEnvironment();
+</script>
+</body>
+</html>
