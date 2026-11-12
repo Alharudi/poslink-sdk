@@ -1,0 +1,327 @@
+/* Print styles for the PDF guide (docs/tools/build_pdf.py). Chrome prints it; needs Chrome 131+
+   for the page header and footer. */
+
+:root {
+  --ink: #1c2128;
+  --muted: #5d6672;
+  --faint: #8a939e;
+  --line: #dde2e7;
+  --soft: #f4f6f8;
+  --accent: #0f5f7a;
+  --accent-soft: #e8f2f5;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+/* Margin boxes don't see the variables above, so values are literal. FOOTER_TEXT is filled in by
+   the build script; per-chapter headers are added there too. */
+@page {
+  size: A4;
+  margin: 22mm 18mm 20mm 18mm;
+  @bottom-left {
+    content: "FOOTER_TEXT";
+    font: 7.5pt -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: #8a939e;
+  }
+  @bottom-right {
+    content: counter(page) " / " counter(pages);
+    font: 7.5pt -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: #8a939e;
+  }
+}
+
+@page cover {
+  margin: 0;
+  @bottom-left { content: none; }
+  @bottom-right { content: none; }
+}
+
+html {
+  font-family: var(--sans);
+  font-size: 9.6pt;
+  line-height: 1.55;
+  color: var(--ink);
+  background: #fff;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body { margin: 0; }
+
+/* ---- Cover ---- */
+
+.cover {
+  page: cover;
+  height: 297mm;
+  box-sizing: border-box;
+  padding: 0 22mm;
+  display: flex;
+  flex-direction: column;
+  break-after: page;
+}
+
+.cover .band {
+  height: 9mm;
+  margin: 0 -22mm;
+  background: var(--accent);
+}
+
+.cover .brand {
+  margin-top: 62mm;
+  font-size: 11pt;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.cover .title {
+  margin: 4mm 0 0;
+  font-size: 40pt;
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  border: none;
+}
+
+.cover .subtitle {
+  margin-top: 5mm;
+  font-size: 15pt;
+  color: var(--muted);
+  max-width: 130mm;
+  line-height: 1.4;
+}
+
+.cover .facts {
+  margin-top: 18mm;
+  display: grid;
+  grid-template-columns: 34mm 1fr;
+  row-gap: 2.5mm;
+  font-size: 9.5pt;
+}
+
+.cover .facts dt { color: var(--faint); }
+.cover .facts dd { margin: 0; }
+
+.cover .bottom {
+  margin-top: auto;
+  padding: 0 0 16mm;
+  border-top: 1px solid var(--line);
+  padding-top: 5mm;
+  font-size: 8pt;
+  color: var(--faint);
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ---- Contents ---- */
+
+.contents { break-after: page; }
+
+.contents h1 {
+  font-size: 22pt;
+  margin: 0 0 8mm;
+}
+
+.toc { list-style: none; margin: 0; padding: 0; }
+
+.toc a { color: inherit; text-decoration: none; }
+
+.toc .row {
+  display: flex;
+  align-items: baseline;
+  gap: 2mm;
+}
+
+.toc .row .title { flex: none; max-width: 85%; }
+
+.toc .row .leader {
+  flex: 1;
+  border-bottom: 1px dotted #c3cad1;
+  transform: translateY(-0.25em);
+}
+
+.toc .row .page {
+  flex: none;
+  min-width: 7mm;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.toc > li { margin: 0 0 3.2mm; break-inside: avoid; }
+
+.toc > li > .row {
+  font-size: 11pt;
+  font-weight: 600;
+}
+
+.toc .num {
+  display: inline-block;
+  width: 7mm;
+  color: var(--accent);
+}
+
+.toc ul {
+  list-style: none;
+  margin: 1.2mm 0 0;
+  padding: 0 0 0 7mm;
+  font-size: 9pt;
+  color: var(--muted);
+}
+
+.toc ul li { margin: 0.6mm 0; }
+
+/* ---- Chapters ---- */
+
+.chapter { break-before: page; }
+
+.chapter-head {
+  margin: 0 0 7mm;
+  padding-bottom: 4mm;
+  border-bottom: 2px solid var(--accent);
+}
+
+.chapter-head .eyebrow {
+  font-size: 8.5pt;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.chapter-head h1 {
+  margin: 1.5mm 0 0;
+  font-size: 22pt;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+h2, h3, h4 {
+  break-after: avoid;
+  page-break-after: avoid;
+  line-height: 1.25;
+}
+
+h2 {
+  margin: 8mm 0 2.5mm;
+  font-size: 14pt;
+  font-weight: 650;
+}
+
+h3 {
+  margin: 6mm 0 2mm;
+  font-size: 11.2pt;
+  font-weight: 650;
+}
+
+h4 { margin: 4mm 0 1.5mm; font-size: 10pt; }
+
+p { margin: 0 0 2.6mm; orphans: 3; widows: 3; }
+
+ul, ol { margin: 0 0 2.6mm; padding-left: 5.5mm; }
+li { margin: 0.6mm 0; }
+li > p { margin: 0 0 1mm; }
+
+li.task { list-style: none; }
+
+li.task .box {
+  display: inline-block;
+  width: 2.7mm;
+  height: 2.7mm;
+  margin: 0 1.6mm 0 -4.3mm;
+  vertical-align: -0.4mm;
+  border: 1px solid #8a939e;
+  border-radius: 0.6mm;
+}
+
+li.task .box.done { background: var(--accent); border-color: var(--accent); }
+
+a { color: var(--accent); text-decoration: none; }
+
+strong { font-weight: 650; }
+
+/* ---- Code ---- */
+
+code {
+  font-family: var(--mono);
+  font-size: 0.86em;
+  background: #eef1f4;
+  border-radius: 3px;
+  padding: 0.05em 0.3em;
+  /* break-word (not anywhere) keeps table columns wide enough for a whole name. */
+  overflow-wrap: break-word;
+}
+
+pre, .hl pre {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 7.9pt;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.hl {
+  margin: 0 0 3.5mm;
+  padding: 3mm 3.5mm;
+  background: var(--soft) !important;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  break-inside: avoid;
+}
+
+pre code, .hl code { background: none; padding: 0; font-size: inherit; }
+
+/* ---- Tables ---- */
+
+table {
+  width: 100%;
+  margin: 0 0 4mm;
+  border-collapse: collapse;
+  font-size: 8.6pt;
+  line-height: 1.45;
+}
+
+thead { display: table-header-group; }
+tr { break-inside: avoid; }
+
+th {
+  text-align: left;
+  font-weight: 650;
+  background: var(--soft);
+  border-bottom: 1.5px solid #c9d1d9;
+}
+
+th, td {
+  padding: 1.6mm 2.2mm;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+}
+
+td code, th code { font-size: 0.92em; }
+
+/* ---- Notes ---- */
+
+blockquote {
+  margin: 0 0 3.5mm;
+  padding: 2.5mm 4mm;
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 4px 4px 0;
+  break-inside: avoid;
+}
+
+blockquote p:last-child { margin-bottom: 0; }
+
+.aside {
+  margin: 0 0 4mm;
+  padding: 3mm 4mm 1mm;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--faint);
+  border-radius: 0 5px 5px 0;
+  break-inside: avoid;
+}
+
+.aside .hl { background: #fff !important; }
+
+hr { border: none; border-top: 1px solid var(--line); margin: 6mm 0; }

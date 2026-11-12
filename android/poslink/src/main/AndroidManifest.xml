@@ -1,0 +1,19 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Bluetooth (Classic, RFCOMM) link. Android 11 and older grant these at install; Android 12+
+         asks for "Nearby devices" at runtime, which the app must request (see
+         BluetoothClientTransport.requiredPermissions and BluetoothServerTransport.requiredPermissions).
+         ADVERTISE lets the terminal make itself visible for pairing. -->
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+
+    <!-- Cashier is USB host, terminal is USB accessory. Not required, so one APK installs on both.
+         The SDK declares no activities: apps add their own USB intent filters (see the KDoc of
+         UsbHostTransport and UsbAccessoryTransport). -->
+    <uses-feature android:name="android.hardware.usb.host" android:required="false" />
+    <uses-feature android:name="android.hardware.usb.accessory" android:required="false" />
+    <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
+
+</manifest>

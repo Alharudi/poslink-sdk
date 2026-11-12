@@ -1,0 +1,17 @@
+# Gradle / Android
+.gradle/
+build/
+local.properties
+CLAUDE.local.md
+*.iml
+.idea/
+.kotlin/
+captures/
+
+# Python
+python/.venv/
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store

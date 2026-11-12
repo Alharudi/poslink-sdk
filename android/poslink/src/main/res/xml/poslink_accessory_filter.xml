@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Terminal side: lets Android open the app when the cashier switches this device into
+     accessory mode. Must match Aoa.MANUFACTURER and Aoa.MODEL (protocol v2 identity). -->
+<resources>
+    <usb-accessory manufacturer="Dojoon" model="PosLink" />
+</resources>

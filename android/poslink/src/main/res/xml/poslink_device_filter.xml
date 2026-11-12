@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cashier side: lets Android open the app (and grant USB permission for good when the user
+     ticks "always open") when one of these devices is plugged in. Values are decimal. -->
+<resources>
+    <!-- Terminal already switched to accessory mode (Google AOA ids 0x18D1:0x2D00 and 0x2D01). -->
+    <usb-device vendor-id="6353" product-id="11520" />
+    <usb-device vendor-id="6353" product-id="11521" />
+
+    <!-- SUNMI P3 in normal mode (MediaTek VID 0x0E8D, PID 0x201C), seen on P3 OS 3.0.39 with
+         developer options both on and off (that firmware keeps ADB on the port either way).
+         If another firmware shows a different PID, add it here. Always match VID and PID, never
+         the VID alone: 0x0E8D is MediaTek's VID, shared by every MediaTek device. -->
+    <usb-device vendor-id="3725" product-id="8220" />
+
+    <!-- UsbHostTransport.handleIntent remembers a matched device as the terminal automatically. -->
+</resources>
