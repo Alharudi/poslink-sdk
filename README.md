@@ -110,6 +110,7 @@ one terminal).
 | `python/` | Reference implementation (becomes the Python SDK) |
 | `android/poslink/` | Android SDK |
 | `android/sample/` | Sample app, both roles |
+| `web/test/` | Browser test page: can this computer's Chrome or Edge reach a terminal over Bluetooth? |
 | `docs/` | Documentation for app developers |
 | `docs/BACKGROUND.md` | How this came about, and hardware facts learned on real P3 devices |
 | `CHANGELOG.md` | What changed in each version |

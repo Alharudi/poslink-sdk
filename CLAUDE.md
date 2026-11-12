@@ -28,6 +28,9 @@ the two don't interoperate. Full background: docs/BACKGROUND.md.
     Kotlin, unit-tested on the JVM.
   - `android/`: USB (AOA host and accessory), Bluetooth (RFCOMM client and server), Keystore
     pairing storage, identity.
+- `web/test/`: browser Bluetooth test page (Web Serial over RFCOMM, Chrome/Edge 117+), the first
+  step toward the TypeScript SDK. `poslink-frames.js` is the frame codec, checked against
+  `spec/vectors`. Served from GitHub Pages at `/test/`.
 
 ## Commands
 
@@ -39,6 +42,7 @@ cd android && ./gradlew :poslink:centralBundle          # signed zip for Maven C
 cd android && ./gradlew :poslink:publishReleasePublicationToPagesRepository -Pposlink.pagesDir=../poslink-pages  # into a gh-pages checkout
 python/.venv/bin/python spec/tools/generate_vectors.py --check
 uv run docs/tools/build_pdf.py                           # docs as one PDF in docs/build/ (needs Chrome; fails on broken links)
+node web/test/poslink-frames.test.mjs                    # JS frame codec vs spec/vectors
 ```
 
 Python: always use the venv at `python/.venv`, because Homebrew Python blocks a global pip install.
