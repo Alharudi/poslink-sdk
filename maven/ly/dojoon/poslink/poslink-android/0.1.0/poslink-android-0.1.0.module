@@ -1,0 +1,130 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "ly.dojoon.poslink",
+    "module": "poslink-android",
+    "version": "0.1.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.3.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseVariantReleaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-android",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.0.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "poslink-android-0.1.0.aar",
+          "url": "poslink-android-0.1.0.aar",
+          "size": 360341,
+          "sha512": "086c4a243b73e812167bb5cb6f9877b6a7286a4b018e416a41a06cf0d85886203d5d6affb743dcac03328caca96f8a3bfb12d8e7eb2c59f6ca9ba92ef2e7ea32",
+          "sha256": "10427165a0d568c67cfb2aba502600da0b65f11b4c0ecca30cf0833c82e18e1b",
+          "sha1": "9e7ac516691590adeba3fde04c0328347f1e7cad",
+          "md5": "239c76eaa32bd92783f78c1de632f908"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-android",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.0.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "poslink-android-0.1.0.aar",
+          "url": "poslink-android-0.1.0.aar",
+          "size": 360341,
+          "sha512": "086c4a243b73e812167bb5cb6f9877b6a7286a4b018e416a41a06cf0d85886203d5d6affb743dcac03328caca96f8a3bfb12d8e7eb2c59f6ca9ba92ef2e7ea32",
+          "sha256": "10427165a0d568c67cfb2aba502600da0b65f11b4c0ecca30cf0833c82e18e1b",
+          "sha1": "9e7ac516691590adeba3fde04c0328347f1e7cad",
+          "md5": "239c76eaa32bd92783f78c1de632f908"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseSourcePublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "poslink-android-0.1.0-sources.jar",
+          "url": "poslink-android-0.1.0-sources.jar",
+          "size": 62259,
+          "sha512": "5bba5a1980a2da08d28cd4c1cef6777bcca7e475225f9cf70008820518aaf4925c09c540a7f527d781bae954cef92d1d5f4007ca17eba6a254d77a36f99bafe3",
+          "sha256": "b4be381aa3ac3c7587306d2c8d22a1f59b32e09d1273419ff857d6a8417fb01c",
+          "sha1": "2df3e21b0a22eac33c343aa313bd6146b9dd108c",
+          "md5": "f856694cb86cd614528417ab535a7506"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseJavaDocPublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "poslink-android-0.1.0-javadoc.jar",
+          "url": "poslink-android-0.1.0-javadoc.jar",
+          "size": 654645,
+          "sha512": "7b054b288c4e62d5ea39663724e7bf7aaa7af7c7a1e1608103a65b5005ed7be4a73c4066b6be5722a4f81132e4c15563f8b7c64d59b53a8d0f207991ee5bc727",
+          "sha256": "2f9a49eb9d1e679de19b32e7d6bcbe41126ed3b1e9c68f965c9807bffbd7c436",
+          "sha1": "69d08c6143ee1202bad1d08b2657c91da9e443b5",
+          "md5": "b1727a8a9ffd96f8a29d415f19628cec"
+        }
+      ]
+    }
+  ]
+}
